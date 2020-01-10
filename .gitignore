@@ -1,0 +1,8 @@
+# Python binaries
+__pycache__
+
+# dataset folder
+dataset/*
+
+# data folder
+data/*
