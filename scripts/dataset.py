@@ -56,12 +56,24 @@ class BaseDataset:
             default='FGNET',
             help='dataset name',
         )
-
         parser.add_argument(
             '--ratio',
             type=float,
             default=0.9,
             help='train/test ratio',
+        )
+        parser.add_argument(
+            '--fgnet-test-id',
+            type=str,
+            default=None,
+            help='to specify a test id for fgnet',
+        )
+        parser.add_argument(
+            '--morph-round',
+            type=int,
+            default=-1,
+            help=
+            'morph round to generate quad, if it is -1, force to re-split list',
         )
         parser.add_argument(
             '--age-margin',
@@ -101,6 +113,16 @@ class BaseDataset:
         self.root = dataset(self.name)
         self.image_root = dataset(self.name, self.image_subdir)
         self.list_file = data(self.name, self._fmt(self.fmt_list_file))
+        self._fmt_values()
+
+        if not os.path.exists(self.list_file):
+            self._fetch_list_file()
+
+        self._fetch_stage_set_file(options)
+        self._fetch_stage_list_file(options)
+        self._fetch_proto_file()
+
+    def _fmt_values(self):
         self.train_file = data(self.name, self._fmt(self.fmt_train_file))
         self.train_set_file = data(self.name,
                                    self._fmt(self.fmt_train_set_file))
@@ -110,13 +132,6 @@ class BaseDataset:
                                      self._fmt(self.fmt_proto_train_file))
         self.test_proto_file = data(self.name,
                                     self._fmt(self.fmt_proto_test_file))
-
-        if not os.path.exists(self.list_file):
-            self._fetch_list_file()
-
-        self._fetch_stage_set_file(options)
-        self._fetch_stage_list_file(options)
-        self._fetch_proto_file()
 
     def _fetch_list_file(self):
         raise NotImplementedError()
@@ -138,46 +153,14 @@ class BaseDataset:
                 test_set_fp.write(row + '\n')
 
     def _fetch_stage_list_file(self, options):
-        with open(self.train_set_file, 'r', encoding='utf-8') as fp:
-            age2row = {}
-            for row in fp.readlines():
-                cols = row.strip().split('\t')
-                if cols[1] not in age2row:
-                    age2row[cols[1]] = []
-                age2row[cols[1]].append(row.strip())
-            with open(self.train_file, 'w', encoding='utf-8') as fp:
-                for quads in self._generate_quad(age2row, options.age_margin):
-                    for pair in quads:
-                        for x, y in pair:
-                            fp.write(x + '\n')
-                            fp.write(y + '\n')
+        from gen_quad import gen_quad, save_quad, parse_age2row
+        age2row = parse_age2row(self.train_set_file)
+        quads = gen_quad(age2row, options.age_margin)
+        save_quad(self.train_file, quads)
         with open(self.test_set_file, 'r', encoding='utf-8') as fp:
             with open(self.test_file, 'w', encoding='utf-8') as test_fp:
                 for row in fp.readlines():
                     test_fp.write(row.strip() + '\n')
-
-    def _generate_quad(self, age2row, age_margin):
-        import itertools
-        result = []
-        for age, fn_list in age2row.items():
-            pos_items = tuple(itertools.combinations(fn_list, 2))
-            if len(pos_items) == 0:
-                continue
-            negs_1 = []
-            negs_2 = []
-            for neg_age, neg_fn_list in age2row.items():
-                distance = int(neg_age) - int(age)
-                if distance == 0:
-                    continue
-                elif distance < 0 and distance >= -age_margin:
-                    negs_1.append(random.choice(neg_fn_list))
-                elif distance > 0 and distance <= age_margin:
-                    negs_2.append(random.choice(neg_fn_list))
-            if len(negs_1) == 0 or len(negs_2) == 0:
-                continue
-            neg_items = ((random.choice(negs_1), random.choice(negs_2)), )
-            result.append(itertools.product(pos_items, neg_items))
-        return result
 
     def _fetch_proto_file(self):
         print('generate %s' % self.train_proto_file)
@@ -212,14 +195,21 @@ class FGNET(BaseDataset):
         print('generate %s' % self.test_set_file)
         train_set_fp = open(self.train_set_file, 'w', encoding='utf-8')
         test_set_fp = open(self.test_set_file, 'w', encoding='utf-8')
-        selected_fid = random.choice(list(id2file.keys()))
+        if options.fgnet_test_id != None:
+            selected_fid = options.fgnet_test_id
+        else:
+            selected_fid = random.choice(list(id2file.keys()))
         print('select "%s" as test set' % selected_fid)
+        selected_used = False
         for fid, rows in id2file.items():
             for row in rows:
                 if fid != selected_fid:
                     train_set_fp.write(row)
                 else:
                     test_set_fp.write(row)
+                    selected_used = True
+        if not selected_used:
+            print('WARNING: there is no such id %s for test' % selected_fid)
         train_set_fp.close()
         test_set_fp.close()
 
@@ -227,6 +217,38 @@ class FGNET(BaseDataset):
 class MORPH(BaseDataset):
     name = 'MORPH'
     image_subdir = 'margin_crop_MORPH'
+    fmt_split_file = 'split/%(round)d.txt'
+    fmt_train_set_file = 'train_set_%(round)d.txt'
+    fmt_train_file = 'train_list_%(round)d.txt'
+    fmt_test_set_file = 'test_set_%(round)d.txt'
+    fmt_test_file = 'test_list_%(round)d.txt'
+    fmt_proto_train_file = 'train_proto_%(round)d.txt'
+    fmt_proto_test_file = 'test_proto_%(round)d.txt'
+
+    def __init__(self, options):
+        self.round = options.morph_round
+        super().__init__(options)
+
+    def _split_list_file(self):
+        tester = os.path.dirname(
+            data(self.name, self._fmt(self.fmt_split_file)))
+        if not os.path.exists(tester):
+            os.makedirs(tester)
+
+        rows = []
+        with open(self.list_file, 'r', encoding='utf-8') as fp:
+            for row in fp.readlines():
+                rows.append(row.strip())
+        random.shuffle(rows)
+
+        step = int(len(rows) / 10)
+        for i in range(0, 10):
+            self.round = i
+            fn = data(self.name, self._fmt(self.fmt_split_file))
+            with open(fn, 'w', encoding='utf-8') as fp:
+                subset = rows[i:i + step]
+                for row in subset:
+                    fp.write(row + '\n')
 
     def _fetch_list_file(self):
         fp = open(self.list_file, 'w', encoding='utf-8')
@@ -237,28 +259,27 @@ class MORPH(BaseDataset):
         fp.close()
 
     def _fetch_stage_set_file(self, options):
-        rows = []
-        with open(self.list_file, 'r', encoding='utf-8') as fp:
-            for row in fp.readlines():
-                rows.append(row.strip())
-        random.shuffle(rows)
+        if self.round is None or self.round == -1:
+            print('split list file')
+            self._split_list_file()
+            self.round = 0
+            self._fmt_values()  # update files name
 
+        print('Start generating round(%d) set files' % self.round)
         print('generate %s' % self.train_set_file)
         print('generate %s' % self.test_set_file)
 
         train_set_fp = open(self.train_set_file, 'w', encoding='utf-8')
         test_set_fp = open(self.test_set_file, 'w', encoding='utf-8')
 
-        step = int(len(rows) / 10)
-        for i in range(0, len(rows), step):
-            subset = rows[i:i + step]
-            substep = int(len(subset) / 10)
-            test_set = random.sample(subset, substep)
-            for row in subset:
-                if row not in test_set:
-                    train_set_fp.write(row + '\n')
-                else:
-                    test_set_fp.write(row + '\n')
+        for i in range(10):
+            splited_fn = data(self.name, self._fmt(self.fmt_split_file))
+            if i == self.round:
+                with open(splited_fn, 'r', encoding='utf-8') as fp:
+                    test_set_fp.write(fp.read())
+            else:
+                with open(splited_fn, 'r', encoding='utf-8') as fp:
+                    train_set_fp.write(fp.read())
 
 
 if __name__ == '__main__':
