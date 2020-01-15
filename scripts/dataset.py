@@ -254,7 +254,7 @@ class MORPH(BaseDataset):
 
     def _fetch_list_file(self):
         fp = open(self.list_file, 'w', encoding='utf-8')
-        with open(dataset(self.name, 'list.txt'), 'r', encoding='utf-8') as i:
+        with open(dataset(self.name, 'MORPH_label_2.txt'), 'r', encoding='utf-8') as i:
             for row in i.readlines():
                 cols = row.strip().split(' ')
                 fp.write("%s %s\n" % tuple(cols))
