@@ -115,6 +115,8 @@ class BaseDataset:
         self.list_file = data(self.name, self._fmt(self.fmt_list_file))
         self._fmt_values()
 
+        self.image_root = self.image_root.rstrip('/') + '/'
+
         if not os.path.exists(self.list_file):
             self._fetch_list_file()
 
@@ -180,7 +182,7 @@ class FGNET(BaseDataset):
         for f in os.listdir(self.image_root):
             name = f
             age = int(name[4:6])
-            fp.write('%(name)s\t%(age)d\n' % locals())
+            fp.write('%(name)s %(age)d\n' % locals())
         fp.close()
 
     def _fetch_stage_set_file(self, options):
@@ -255,7 +257,7 @@ class MORPH(BaseDataset):
         with open(dataset(self.name, 'list.txt'), 'r', encoding='utf-8') as i:
             for row in i.readlines():
                 cols = row.strip().split(' ')
-                fp.write("%s\t%s\n" % tuple(cols))
+                fp.write("%s %s\n" % tuple(cols))
         fp.close()
 
     def _fetch_stage_set_file(self, options):
