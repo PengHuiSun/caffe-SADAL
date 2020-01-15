@@ -1,8 +1,11 @@
 # Similarity-Aware Deep Adversarial Learning for Facial Age Estimation
 
-
 ## Compatibility
 The code is tested using Caffe under Ubuntu 16.04 with Python 2.7 and Python 3.5. 
+
+## Preparation for Training
+1. Download MORPH and FGNET data to ./datasets
+2.
 
 ## Main Results
 ### MORPH
