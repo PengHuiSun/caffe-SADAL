@@ -1,5 +1,6 @@
 # Python binaries
 __pycache__
+*.pyc
 
 # dataset folder
 dataset/*
