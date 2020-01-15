@@ -3,7 +3,7 @@
 ## Citing SADAL
 If you find SADAL useful in your research, please consider citing:
 
-<@INPROCEEDINGS{SADAL,  
+@INPROCEEDINGS{SADAL,  
 author={Penghui Sun, **Hao Liu***, Xing Wang, Zhenhua Yu and Suping Wu},  
 booktitle={2019 IEEE International Conference on Multimedia and Expo (ICME)},  
 title={Similarity-Aware Deep Adversarial Learning for Facial Age Estimation},  
