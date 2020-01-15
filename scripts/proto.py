@@ -519,8 +519,8 @@ layer {
 }
 layer {
   bottom: "fc7"
-  bottom: "my_FC_2"
   bottom: "label"
+  bottom: "my_FC_2"
   top: "gen_loss"
   name: "gen_loss"
   type: "GeneratorLoss"
