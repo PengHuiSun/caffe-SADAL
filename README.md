@@ -1,5 +1,9 @@
 # Similarity-Aware Deep Adversarial Learning for Facial Age Estimation
 
+
+## Compatibility
+The code is tested using Caffe under Ubuntu 16.04 with Python 2.7 and Python 3.5. 
+
 ## Main Results
 ### MORPH
 **Table 1.** Comparisons of MAEs with different state-of-the-art approaches on the ***MORPH*** dataset. The MAE (in years) is reported for each method.  
