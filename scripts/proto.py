@@ -1,4 +1,4 @@
-TMPL_TRAIN_PROTO = '''name: "VGG_ILSVRC_16_layers"
+TMPL_TRAIN_PROTO = '''name: "QuadrupletLoss"
 layer {
   name: "data"
   type: "ImageData"
@@ -10,33 +10,12 @@ layer {
   }
   transform_param {
       mirror: true
-    crop_size: 224
+      crop_size: 224
   }
   image_data_param {
     source: "%(train_file)s"
     root_folder: "%(image_root)s"
     batch_size: 64
-    new_height: 256
-    new_width: 256
-  }
-}
-layer {
-  name: "data"
-  type: "ImageData"
-  top: "data"
-  top: "label"
-
-  include {
-    phase: TEST
-  }
-  transform_param {
-      mirror: false
-    crop_size: 224
-  }
-  image_data_param {
-    source: "%(test_file)s"
-    root_folder: "%(image_root)s"
-    batch_size: 1
     new_height: 256
     new_width: 256
   }
@@ -106,7 +85,7 @@ layer {
   bottom: "pool1"
   top: "conv2_1"
   name: "conv2_1"
- param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -132,7 +111,7 @@ layer {
   top: "conv2_2"
   name: "conv2_2"
 
- param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -168,7 +147,7 @@ layer {
   bottom: "pool2"
   top: "conv3_1"
   name: "conv3_1"
- param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -193,7 +172,7 @@ layer {
   bottom: "conv3_1"
   top: "conv3_2"
   name: "conv3_2"
- param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -218,7 +197,7 @@ layer {
   bottom: "conv3_2"
   top: "conv3_3"
   name: "conv3_3"
- param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -280,7 +259,7 @@ layer {
   bottom: "conv4_1"
   top: "conv4_2"
   name: "conv4_2"
- param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -305,7 +284,7 @@ layer {
   bottom: "conv4_2"
   top: "conv4_3"
   name: "conv4_3"
- param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -368,7 +347,7 @@ layer {
   bottom: "conv5_1"
   top: "conv5_2"
   name: "conv5_2"
- param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -394,7 +373,7 @@ layer {
   top: "conv5_3"
   name: "conv5_3"
   type: "Convolution"
- param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -429,7 +408,7 @@ layer {
   bottom: "pool5"
   top: "fc6"
   name: "fc6"
- param {
+  param {
     lr_mult: 10
     decay_mult: 1
   }
@@ -461,7 +440,7 @@ layer {
   bottom: "fc6"
   top: "fc7"
   name: "fc7"
- param {
+  param {
     lr_mult: 10
     decay_mult: 1
   }
@@ -491,6 +470,31 @@ layer {
 }
 layer {
   bottom: "fc7"
+  top: "fc8-100"
+  name: "fc8-100"
+  param {
+    lr_mult: 10
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 20
+    decay_mult: 0
+  }
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 100
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  bottom: "fc8-100"
   top: "quad_expand"
   name: "quad_expand"
   type: "QuadExpand"
@@ -500,8 +504,16 @@ layer {
   top: "my_FC_1"
   name: "my_FC_1"
   type: "InnerProduct"
+  param {
+    lr_mult: 10
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 20
+    decay_mult: 0
+  }
   inner_product_param {
-    num_output: 4096
+    num_output: 100
     weight_filler { type: "gaussian" std: 0.01}
     bias_filler { type: "constant" value: 0 }
   }
@@ -511,22 +523,34 @@ layer {
   top: "my_FC_2"
   name: "my_FC_2"
   type: "InnerProduct"
+  param {
+    lr_mult: 10
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 20
+    decay_mult: 0
+  }
   inner_product_param {
-    num_output: 4096
+    num_output: 100
     weight_filler { type: "gaussian" std: 0.01}
     bias_filler { type: "constant" value: 0 }
   }
 }
 layer {
-  bottom: "fc7"
+  bottom: "fc8-100"
   bottom: "label"
   bottom: "my_FC_2"
   top: "gen_loss"
   name: "gen_loss"
   type: "GeneratorLoss"
+  loss_weight: 1
+  include {
+    phase: TRAIN
+  }
 }
 layer {
-  bottom: "fc7"
+  bottom: "fc8-100"
   bottom: "my_FC_2"
   top: "quad_merge"
   name: "quad_merge"
@@ -537,8 +561,16 @@ layer {
   top: "quadruplet_fc"
   name: "quadruplet_fc"
   type: "InnerProduct"
+  param {
+    lr_mult: 10
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 20
+    decay_mult: 0
+  }
   inner_product_param {
-    num_output: 4096
+    num_output: 100
     weight_filler { type: "gaussian" std: 0.01}
     bias_filler { type: "constant" value: 0 }
   }
@@ -549,9 +581,12 @@ layer {
   top: "quadruplet_loss"
   name: "quadruplet_loss"
   type: "QuadrupletLoss"
-
+  loss_weight: 1
   loss_param {
     normalization: NONE
+  }
+  include {
+    phase: TRAIN
   }
 }
 '''
