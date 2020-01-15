@@ -31,7 +31,7 @@ def parse_age2row(fn):
     age2row = {}
     with open(fn, 'r', encoding='utf-8') as fp:
         for row in fp.readlines():
-            cols = row.strip().split('\t')
+            cols = row.strip().split(' ')
             if cols[1] not in age2row:
                 age2row[cols[1]] = []
             age2row[cols[1]].append(row.strip())
