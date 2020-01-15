@@ -1,5 +1,5 @@
-Similarity-Aware Deep Adversarial Learning for Facial Age Estimation
-===========
+# Similarity-Aware Deep Adversarial Learning for Facial Age Estimation
+
 If you find SADAL useful in your research, please consider citing:
 
 <@INPROCEEDINGS{SADAL,  
