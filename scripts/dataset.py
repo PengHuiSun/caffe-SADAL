@@ -173,7 +173,7 @@ class BaseDataset:
 
 class FGNET(BaseDataset):
     name = 'FGNET'
-    image_subdir = 'FGNET'
+    image_subdir = 'margin_crop_FGNET'
 
     def _fetch_list_file(self):
         fp = open(self.list_file, 'w', encoding='utf-8')
