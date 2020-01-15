@@ -534,7 +534,7 @@ layer {
 }
 layer {
   bottom: "quad_merge"
-  top: "quadruplet_loss"
+  top: "quadruplet_fc"
   name: "quadruplet_fc"
   type: "InnerProduct"
   inner_product_param {
@@ -591,8 +591,8 @@ layer {
 		crop_size: 224
 	}
 	image_data_param {
-		source: "/home/hliu/data1/Penghui_lab/sun/AGE_DATA_SET/MORPH/6-4-fold/morph_test_3.txt"
-		root_folder: "/home/hliu/data1/Penghui_lab/sun/AGE_DATA_SET/MORPH/margin_crop_MORPH/"
+		source: "%(test_file)s"
+		root_folder: "%(image_root)s"
 		batch_size: 1
 		new_height: 256
 		new_width: 256
