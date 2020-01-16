@@ -5,17 +5,21 @@ The code is tested using Caffe under Ubuntu 16.04 with Python 2.7 and Python 3.5
 
 ## Preparation for Training and Testing
 1. Download MORPH and FGNET data to ./dataset; The file directory format is as follows:  
-> caffe-SADAL
->> caffe  
->> scripts  
->> dataset
->>> MORPH  
->>> FGNET  
+```
+caffe-SADAL
+----------| caffe  
+----------| scripts  
+----------| dataset
+-------------------| MORPH  
+-------------------| FGNET  
+```
 2. Run the following command to generate the required files;  
-```python3 ./scripts/dataset.py --dataset='MORPH' //MORPH or FGNET  
+```
+python3 ./scripts/dataset.py --dataset='MORPH' //MORPH or FGNET  
 ```
 3. Run the following command to evaluate model performance.  
-```python2 ./scripts/extract_evaluate.py --caffe-net=' ' --caffe-model=' ' --test-list=' ' --img-root=' ' --mae-result-mat=' '  
+``` 
+python2 ./scripts/extract_evaluate.py --caffe-net=' ' --caffe-model=' ' --test-list=' ' --img-root=' ' --mae-result-mat=' '  
 ```
 
 ## Main Results
