@@ -5,6 +5,7 @@ The code is tested using Caffe under Ubuntu 16.04 with Python 2.7 and Python 3.5
 
 ## Preparation for Training and Testing
 1. Download MORPH and FGNET data to ./dataset;  
+The file directory format is as follows:  
 > caffe-SADAL
 >> caffe  
 >> scripts  
