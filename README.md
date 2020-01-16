@@ -7,7 +7,7 @@ The code is tested using Caffe under Ubuntu 16.04 with Python 2.7 and Python 3.5
 1. Download MORPH and FGNET data to ./dataset;  
 > caffe-SADAL
 >> caffe  
->> scripts
+>> scripts  
 >> dataset
 >>> MORPH  
 >>> FGNET
