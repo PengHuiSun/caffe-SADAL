@@ -42,8 +42,8 @@ class BaseDataset:
     fmt_train_file = 'train_list.txt'
     fmt_test_set_file = 'test_set.txt'
     fmt_test_file = 'test_list.txt'
-    fmt_proto_train_file = 'train_proto.txt'
-    fmt_proto_test_file = 'test_proto.txt'
+    fmt_proto_train_file = 'train_proto.prototxt'
+    fmt_proto_test_file = 'test_proto.prototxt'
 
     @staticmethod
     def get_arg_parser():
@@ -224,8 +224,8 @@ class MORPH(BaseDataset):
     fmt_train_file = 'train_list_%(round)d.txt'
     fmt_test_set_file = 'test_set_%(round)d.txt'
     fmt_test_file = 'test_list_%(round)d.txt'
-    fmt_proto_train_file = 'train_proto_%(round)d.txt'
-    fmt_proto_test_file = 'test_proto_%(round)d.txt'
+    fmt_proto_train_file = 'train_proto_%(round)d.prototxt'
+    fmt_proto_test_file = 'test_proto_%(round)d.prototxt'
 
     def __init__(self, options):
         self.round = options.morph_round
@@ -254,7 +254,7 @@ class MORPH(BaseDataset):
 
     def _fetch_list_file(self):
         fp = open(self.list_file, 'w', encoding='utf-8')
-        with open(dataset(self.name, 'MORPH_label_2.txt'), 'r', encoding='utf-8') as i:
+        with open(dataset(self.name, 'MORPH.txt'), 'r', encoding='utf-8') as i:
             for row in i.readlines():
                 cols = row.strip().split(' ')
                 fp.write("%s %s\n" % tuple(cols))
