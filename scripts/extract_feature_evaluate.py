@@ -111,6 +111,10 @@ def main():
         type=str,
     )
     parser.add_argument(
+        '--test-img-root',
+        type=str,
+    )
+    parser.add_argument(
         '--mae-result-mat',
         type=str,
     )
