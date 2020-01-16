@@ -3,9 +3,18 @@
 ## Compatibility
 The code is tested using Caffe under Ubuntu 16.04 with Python 2.7 and Python 3.5. 
 
-## Preparation for Training
-1. Download MORPH and FGNET data to ./dataset
-2.
+## Preparation for Training and Testing
+1. Download MORPH and FGNET data to ./dataset;  
+> caffe-SADAL
+>> caffe
+>> dataset
+>>> MORPH
+>>> FGNET
+>> scripts
+2. Run the following command to generate the required files;  
+<python3 ./scripts/dataset.py --dataset='MORPH' //MORPH or FGNET>  
+3. Run the following command to evaluate model performance.  
+python2 ./scripts/extract_evaluate.py --caffe-net=' ' --caffe-model=' ' --test-list=' ' --img-root=' ' --mae-result-mat=' '  
 
 ## Main Results
 ### MORPH
