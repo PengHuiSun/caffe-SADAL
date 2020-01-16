@@ -10,8 +10,7 @@ The code is tested using Caffe under Ubuntu 16.04 with Python 2.7 and Python 3.5
 >> scripts  
 >> dataset
 >>> MORPH  
->>> FGNET
-
+>>> FGNET  
 2. Run the following command to generate the required files;  
 python3 ./scripts/dataset.py --dataset='MORPH' //MORPH or FGNET  
 3. Run the following command to evaluate model performance.  
@@ -70,13 +69,15 @@ python2 ./scripts/extract_evaluate.py --caffe-net=' ' --caffe-model=' ' --test-l
 ## Citing SADAL
 If you find SADAL useful in your research, please consider citing:
 
-　　@INPROCEEDINGS{SADAL,  
-　　　　author={Penghui Sun, **Hao Liu***, Xing Wang, Zhenhua Yu, Suping Wu},  
-　　　　booktitle={2019 IEEE International Conference on Multimedia and Expo (ICME)},  
-　　　　title={Similarity-Aware Deep Adversarial Learning for Facial Age Estimation},  
-　　　　year={2019},  
-　　　　pages={260-265},  
-　　　　doi={10.1109/ICME.2019.00053},  
-　　　　ISSN={1945-7871},  
-　　　　month={July}  
-　　} 
+```
+@INPROCEEDINGS{SADAL,  
+          author={Penghui Sun, **Hao Liu***, Xing Wang, Zhenhua Yu, Suping Wu},  
+          booktitle={2019 IEEE International Conference on Multimedia and Expo (ICME)},  
+          title={Similarity-Aware Deep Adversarial Learning for Facial Age Estimation},  
+          year={2019},  
+          pages={260-265},  
+          doi={10.1109/ICME.2019.00053},  
+          ISSN={1945-7871},  
+          month={July}  
+          } 
+```
