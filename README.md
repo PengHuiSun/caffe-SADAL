@@ -1,7 +1,7 @@
 # Similarity-Aware Deep Adversarial Learning for Facial Age Estimation
 
 ## Compatibility
-The code is tested using Caffe under Ubuntu 16.04 with Python 2.7 and Python 3.5. 
+The code is tested using [Caffe](http://caffe.berkeleyvision.org/) under Ubuntu 16.04 with Python 2.7 and Python 3.5. We performed the initialization with VGG Face Net. More details can be found on [this project page](http://www.robots.ox.ac.uk/~vgg/software/vgg_face/).
 
 ## Preparation for Training and Testing
 1. Download MORPH and FGNET data to ./dataset; The file directory format is as follows:  
@@ -77,7 +77,7 @@ If you find SADAL useful in your research, please consider citing:
 
 ```
 @INPROCEEDINGS{SADAL,  
-          author={Penghui Sun, **Hao Liu***, Xing Wang, Zhenhua Yu, Suping Wu},  
+          author={Penghui Sun, Hao Liu*, Xing Wang, Zhenhua Yu, Suping Wu},  
           booktitle={2019 IEEE International Conference on Multimedia and Expo (ICME)},  
           title={Similarity-Aware Deep Adversarial Learning for Facial Age Estimation},  
           year={2019},  
