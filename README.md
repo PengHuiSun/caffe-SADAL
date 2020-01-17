@@ -19,7 +19,7 @@ python3 ./scripts/dataset.py --dataset='MORPH' //MORPH or FGNET
 ```
 3. Run the following command to evaluate model performance.  
 ``` 
-python2 ./scripts/extract_evaluate.py --caffe-net=' ' --caffe-model=' ' --img-root=' ' --mae-result-mat=' '  
+python2 ./scripts/extract_evaluate.py --caffe-net=' ' --caffe-model=' ' --test-list=' ' --mae-result-mat=' '  
 ```
 
 ## Main Results
