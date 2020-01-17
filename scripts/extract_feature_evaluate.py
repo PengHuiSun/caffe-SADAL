@@ -107,10 +107,6 @@ def main():
         default=1,
     )
     parser.add_argument(
-        '--test-list',
-        type=str,
-    )
-    parser.add_argument(
         '--test-img-root',
         type=str,
     )
